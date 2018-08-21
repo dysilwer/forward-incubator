@@ -1,0 +1,52 @@
+1
+SELECT COUNT(ID_LOG) as quantity
+FROM   fw_process_log
+WHERE V_MESSAGE LIKE '%2520123%' and N_STATUS = 500
+2
+SELECT max (TO_CHAR(DT_TIMESTAMP,  'dd.mon.yyyy')) as DT_TIMESTAMP 
+FROM   fw_process_log
+where V_MESSAGE LIKE '%2520123%' and N_STATUS = 500
+3
+SELECT V_MESSAGE as Order_number
+FROM   fw_process_log
+where N_ACTION = 12
+4
+SELECT COUNT (DISTINCT V_MESSAGE) as Order_number
+FROM   fw_process_log
+where N_ACTION = 12
+5
+
+6
+SELECT COUNT (N_ACTION) as quantity
+FROM   fw_process_log
+where N_ACTION = 11 and DT_TIMESTAMP BETWEEN '2018-03-01' and '2018-03-31'
+7
+SELECT Count( Count (*))
+FROM   fw_process_log
+group by SID
+8
+select DT_TIMESTAMP, OS_USERNAME
+from fw_process_log 
+where ID_USER = 11136 and DT_TIMESTAMP = (select max (DT_TIMESTAMP) from fw_process_log where ID_USER = 11136);
+9
+select Count (*), TO_CHAR (DT_TIMESTAMP, 'mon') as month
+from fw_process_log
+group by TO_CHAR (DT_TIMESTAMP, 'mon')
+10
+select count (*) as ALL_records, count (distinct(V_MESSAGE)) as unique_MESSAGE
+from fw_process_log
+where N_STATUS = 500 and ID_PROCESS = 5 and DT_TIMESTAMP > '22.02.2018' and DT_TIMESTAMP < '02.03.2018'
+11
+select min (N_SUM)
+from fw_transfers
+where DT_INCOMING BETWEEN '2018-03-01 10:00:00' and '2018-03-31 14:00:00' and ID_CONTRACT_FROM != ID_CONTRACT_TO
+12
+select ID_CONTRACT_TO, DT_REAL, length (V_DESCRIPTION) - 22 as symbol
+from fw_transfers
+where length (V_DESCRIPTION) > 22
+order by symbol desc
+13
+select  TO_CHAR (DT_REAL, 'dd.mm.yyyy') as dd, Count (*)
+from fw_transfers
+where ID_CONTRACT_FROM = ID_CONTRACT_TO
+group by TO_CHAR (DT_REAL, 'dd.mm.yyyy')
