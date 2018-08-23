@@ -1,0 +1,26 @@
+1
+select V_NAME, sum (F_SUM), count (F_SUM), count (id_contract_inst)
+from FW_DEPARTMENTS DEP join fw_contracts CON on DEP.ID_DEPARTMENT = CON.ID_DEPARTMENT  join trans_external EX on EX.ID_CONTRACT = CON.ID_CONTRACT_INST
+where con.V_STATUS = 'A' and dt_event > (select max(dt_event) from trans_external) - interval '1' month 
+Group By V_NAME
+
+2
+ select  distinct V_EXT_IDENT , CON.V_STATUS, (select count (V_EXT_IDENT)
+               from fw_contracts CON  join trans_external EX on EX.ID_CONTRACT = CON.ID_CONTRACT_INST
+              where EX.DT_EVENT<to_date('01.01.2018', 'dd.mm.yyyy')
+                and EX.DT_EVENT>=to_date('01.01.2017', 'dd.mm.yyyy')
+                and EX.v_status = 'A'
+                and dt_start <= current_timestamp
+                and dt_stop > current_timestamp
+                Group By V_EXT_IDENT) as Quant
+
+  from fw_contracts CON  join trans_external EX on EX.ID_CONTRACT = CON.ID_CONTRACT_INST
+  where  (select count (V_EXT_IDENT)
+               from fw_contracts CON  join trans_external EX on EX.ID_CONTRACT = CON.ID_CONTRACT_INST
+              where EX.DT_EVENT<to_date('01.01.2018', 'dd.mm.yyyy')
+                and EX.DT_EVENT>=to_date('01.01.2017', 'dd.mm.yyyy')
+                and EX.v_status = 'A'
+                and dt_start <= current_timestamp
+                and dt_stop > current_timestamp
+                Group By V_EXT_IDENT) >=3
+  
