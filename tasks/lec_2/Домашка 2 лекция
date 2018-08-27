@@ -1,0 +1,60 @@
+1
+select V_NAME , nvl2 (sum(tra.f_sum), sum(tra.f_sum), 0) as SUM_month, count(tra.f_sum) as SUM_Q_month, count(con.id_contract_inst) as ALL_contr 
+from fw_departments dep left join fw_contracts con
+on con.id_department=dep.id_department
+and con.dt_start <= current_timestamp
+   and con.dt_stop > current_timestamp
+left join trans_external tra
+on tra.id_contract = con.id_contract_inst and tra.v_status = 'A'
+and tra.dt_event> (select max(tra.dt_event) from trans_external tra) - interval '1' month
+where b_deleted=0
+group by V_NAME
+
+2
+select CON.v_ext_ident,  count (V_EXT_IDENT) as ALL_CON, CON.v_status
+               from fw_contracts CON  join trans_external EX on EX.ID_CONTRACT = CON.ID_CONTRACT_INST
+              where EX.DT_EVENT<to_date('01.01.2018', 'dd.mm.yyyy')
+                and EX.DT_EVENT>=to_date('01.01.2017', 'dd.mm.yyyy')
+                and EX.v_status = 'A'
+                and dt_start <= current_timestamp
+                and dt_stop > current_timestamp
+                
+Group By V_EXT_IDENT, CON.v_status
+having count (V_EXT_IDENT) > 3
+
+3
+select  V_NAME
+from fw_contracts con FULL join FW_DEPARTMENTS DEP  on con.ID_DEPARTMENT=DEP.ID_DEPARTMENT
+where   
+b_deleted =0 and
+ID_CONTRACT_INST is null
+
+4 
+
+select Q_con, max_time, V_EXT_IDENT, V_USERNAME
+from 
+(select ID_CONTRACT, count(ID_TRANS) as Q_con, max (DT_EVENT) as max_time , ID_SOURCE, V_USERNAME
+From trans_external ext FULL join ci_users US on ext.ID_SOURCE = US.ID_USER 
+where ext.V_STATUS = 'A'
+and US.V_STATUS = 'A'
+
+5
+
+select x.ID_CONTRACT_INST, con.V_EXT_IDENT, CON.V_STATUS, V_NAME
+
+from (select ID_CONTRACT_INST, count (ID_CURRENCY) as Q_con 
+from fw_contracts 
+group by ID_CONTRACT_INST
+having count (ID_CURRENCY) >1) x 
+join fw_contracts con on x.ID_CONTRACT_INST=CON.ID_CONTRACT_INST 
+join  FW_CURRENCY CUR on CON.ID_CURRENCY=CUR.ID_CURRENCY and CUR.b_deleted=0
+
+where  cur.b_deleted=0
+and con.dt_start <= current_timestamp
+and con.dt_stop > current_timestamp
+
+6
+
+
+
+
